@@ -15,7 +15,7 @@
 	href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
 	integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
 	crossorigin="anonymous">
-<title>Registration Page</title>
+<title>Edit Profile</title>
 
 <style>
 .form-control, .form-control:focus {
@@ -59,10 +59,10 @@ button, input, optgroup, select, textarea {
 
 						<div class="row">
 							<div class="col-md-11 mb-5">
-								<h3>Sign Up</h3>
+								<h3>Edit your Profile</h3>
 							</div>
 							<div class="col-md-1 mb-5 pb-4">
-								<a href="/" class="fas fa-home"></a>
+								<a href="/employeeDashboard" class="fas fa-home"></a>
 							</div>
 						</div>
 
@@ -74,28 +74,26 @@ button, input, optgroup, select, textarea {
 							<th:block th:text="${#session.removeAttribute('message')}"></th:block>
 						</div>
 
-						<form th:action="@{/addEmployee}" method="post" oninput='confirmPassword.setCustomValidity(confirmPassword.value != password.value ? "Passwords do not match." : "")'>
+						<form th:action="@{/saveProfile}" th:object="${employee}" method="post" oninput='confirmPassword.setCustomValidity(confirmPassword.value != password.value ? "Passwords do not match." : "")'>
 							<div class="form-outline mb-4">
-								<input type="text" id="id" name="id" class="form-control" placeholder="EmployeeID" onfocus="this.value=''" required/>
-								 <small id="idHelp" class="form-text text-muted">EmployeeID is your username for future login. (ex. HSPL01)</small>
-								 <!-- <input type="reset" value="reset"/> -->
+								<input type="hidden" th:field="*{id}" id="id" name="id" class="form-control" placeholder="EmployeeID" required/>
 							</div>
 							
 							<div class="form-outline mb-4">
-								<input type="text" id="firstName" name="firstName" class="form-control" placeholder="First Name" required/>
+								<input type="text" th:field="*{firstName}" id="firstName" name="firstName" class="form-control" placeholder="First Name" required/>
 							</div>
 							
 							<div class="form-outline mb-4">
-								<input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last Name" required/>
+								<input type="text" th:field="*{lastName}" id="lastName" name="lastName" class="form-control" placeholder="Last Name" required/>
 							</div>
 
 							<div class="form-outline mb-4">
-								<input type="email" id="email" name="email" class="form-control" placeholder="Email" required/>
+								<input type="email" th:field="*{email}" id="email" name="email" class="form-control" placeholder="Email" required/>
 							</div>
 
 							<div class="form-outline mb-4">
 								<div class="input-group mb-3">
-									<input type="password" id="password" name="password" value="" class="input form-control" placeholder="Password" onfocus="this.value=''" required/>
+									<input type="password" th:field="*{password}" id="password" name="password" class="input form-control" placeholder="Password" required/>
 									<div class="input-group-append">
 										<span class="input-group-text" onclick="password_show_hide();">
 											<i class="fas fa-eye" id="show_eye"></i> <i
@@ -142,14 +140,7 @@ button, input, optgroup, select, textarea {
 								</div>
 							</div>
 
-							<div class="form-check d-flex justify-content-center mb-4">
-								<span class="input-group-prepend">
-								<input class="form-check-input me-4" type="checkbox" value="" id="registerCheck" checked aria-describedby="registerCheckHelpText" /> 
-								<label class="form-check-label" for="registerCheck"> I have read and agree to the terms </label>
-								</span>
-							</div>
-
-							<button type="submit" class="btn btn-primary btn-block mb-3">Save</button>
+							<button type="submit" class="btn btn-primary btn-block mb-3">Save Changes</button>
 						</form>
 					</div>
 				</div>

@@ -34,32 +34,32 @@
 									<h3>Task Details</h3>
 								</div>
 								<div class="col-md-1 mb-5 pb-4">
-									<a href="/" class="fas fa-home"></a>
+									<a href="/taskDashboard" class="fas fa-home"></a>
 								</div>
 						</div>
 						
 						<form>
 							<div class="form-group">
-								<!-- <tr th:each=" t: ${taskdata}"> -->
-									<label for="id" class="control-label"><b>Task ID:</b> <!-- <span
-										th:text="${t.id}"></span> --></label>
+								<tr th:each=" t: ${taskdata}">
+									<label for="id" class="control-label"><b>Task ID:</b> <span
+										th:text="${t.id}"></span></label>
 									<br>
-									<label for="title" class="control-label"><b>Title:</b> <!-- <span
-										th:text="${t.title}"></span> --></label>
+									<label for="title" class="control-label"><b>Title:</b> <span
+										th:text="${t.title}"></span></label>
 									<br>
-									<label for="description" class="control-label"><b>Description:</b> <!-- <span
-										th:text="${t.description}"></span> --></label>
+									<label for="description" class="control-label"><b>Description:</b> <span
+										th:text="${t.description}"></span></label>
 									<br>
-									<label for="assignTo" class="control-label"><b>Assign To:</b> <!-- <span 
-										th:text="${t.assignTo}"></span> --></label>
+									<label for="assignTo" class="control-label"><b>Assign To:</b> <span 
+										th:text="${t.assignTo}"></span></label>
 									<br>
-									<label for="estimation" class="control-label"><b>Approximate Estimation:</b> <!-- <span
-										th:text="${t.estimation}"></span> --></label>
+									<label for="estimation" class="control-label"><b>Approximate Estimation:</b> <span
+										th:text="${t.approxEstimation}"></span></label>
 									<br>
-									<label for="expectedDate" class="control-label"><b>Expected Date:</b> <!-- <span 
-										th:text="${t.expectedDate}"></span> --></label>
+									<label for="expectedDate" class="control-label"><b>Expected Date:</b> <span 
+										th:text="${t.expectedDueDate}"></span></label>
 									<br>
-								<!-- </tr> -->
+								</tr>
 							</div>
 						</form>
 					

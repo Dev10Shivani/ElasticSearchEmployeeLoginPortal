@@ -53,7 +53,7 @@ button, input, optgroup, select, textarea {
 								<h3>Create New Task</h3>
 							</div>
 							<div class="col-md-1 mb-5 pb-4">
-								<a href="/taskDashboard" class="fas fa-home"></a>
+								<a href="/employeeDashboard" class="fas fa-home"></a>
 							</div>
 						</div>
 
@@ -65,7 +65,7 @@ button, input, optgroup, select, textarea {
 							<th:block th:text="${#session.removeAttribute('message')}"></th:block>
 						</div>
 
-						<form th:action="@{/addTask}" th:object="${task}" method="post">
+						<form th:action="@{/addEmpTask}" th:object="${task}" method="post">
 							<div class="form-outline mb-4">
 								<label for="taskID">task ID</label> 
 								<input type="text" id="taskID" name="id" class="form-control" placeholder="TaskID"/>

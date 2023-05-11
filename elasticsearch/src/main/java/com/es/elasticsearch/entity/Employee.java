@@ -19,10 +19,10 @@ public class Employee {
     @Id
     private String id;
 
-    @Field(type = FieldType.Text, name = "firstname")
+    @Field(type = FieldType.Text, name = "firstName")
     private String firstName;
 
-    @Field(type = FieldType.Text, name = "lastname")
+    @Field(type = FieldType.Text, name = "lastName")
     private String lastName;
 
     @Field(type = FieldType.Text, name = "email")
@@ -30,4 +30,10 @@ public class Employee {
 
     @Field(type = FieldType.Text, name = "password")
     private String password;
+
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", password=" + password + "]";
+	}
 }

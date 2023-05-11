@@ -1,0 +1,25 @@
+{
+    "properties":{
+        "id": {
+            "type": "Keyword"
+        },
+        "title": {
+            "type": "text"
+        },
+        "description": {
+            "type": "text"
+        },
+        "assignTo": {
+            "type": "text"
+        },
+        "empId": {
+            "type": "text"
+        },
+        "approxEstimation": {
+            "type": "text"
+        },
+        "expectedDueDate": {
+            "type": "date"
+        }
+    }
+}

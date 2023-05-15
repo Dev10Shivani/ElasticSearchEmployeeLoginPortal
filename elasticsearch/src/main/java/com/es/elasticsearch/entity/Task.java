@@ -6,7 +6,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.es.elasticsearch.helper.Indices;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,9 +18,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(indexName = "tasks")
+@Document(indexName = Indices.TASK_INDEX)
+/* @Setting(settingPath = "static/mapping/task.json") */
 public class Task {
 	@Id
+	@Field(type = FieldType.Keyword)
 	private String id;
 
 	@Field(type = FieldType.Text, name = "title")

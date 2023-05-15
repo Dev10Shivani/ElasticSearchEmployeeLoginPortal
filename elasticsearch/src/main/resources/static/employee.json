@@ -1,0 +1,19 @@
+{
+    "properties":{
+        "id": {
+            "type": "Keyword"
+        },
+        "firstName": {
+            "type": "text"
+        },
+        "lastName": {
+            "type": "text"
+        },
+        "email": {
+            "type": "text"
+        },
+        "password": {
+            "type": "text"
+        }
+    }
+}

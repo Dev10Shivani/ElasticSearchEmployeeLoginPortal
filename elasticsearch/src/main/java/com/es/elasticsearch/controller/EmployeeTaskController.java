@@ -101,33 +101,28 @@ public class EmployeeTaskController {
 	}
 
 	@GetMapping("/deleteTask/{id}")
-	public String deleteTask(@PathVariable(value = "id") String id) throws IOException {
+	public String deleteTask(@PathVariable(value = "id") String id, HttpSession session) throws IOException {
 		this.elasticSearchQueryTask.deleteDocumentById(id);
+		session.setAttribute("message", "Task " + id + " Deleted sucessfully. Please refresh the page");
 		return "taskDashboard";
 	}
-	
+
 	@GetMapping("/editProfile/{id}")
 	public String editProfile(@PathVariable(value = "id") String id, Model model) throws IOException {
 		Employee employee = elasticSearchQueryEmployee.getDocumentByEmployeeId(id);
-		System.out.println("edit profile >>> "+employee);
+		System.out.println("edit profile >>> " + employee);
 		model.addAttribute("employee", employee);
 		return "editProfile";
 	}
 
 	@PostMapping("/saveProfile")
 	public String resetPassword(@ModelAttribute Employee employee, HttpSession session) throws IOException {
-		System.out.println("save profile >>> "+employee);
+		System.out.println("save profile >>> " + employee);
 		elasticSearchQueryEmployee.createUpdateDocumentEmployee(employee);
 		session.setAttribute("message", "Profile updated successfully..");
 		return "editProfile";
 	}
-	
-	@GetMapping("/deleteEmpTask/{id}")
-	public String deleteEmpTask(@PathVariable(value = "id") String id) throws IOException {
-		this.elasticSearchQueryTask.deleteDocumentById(id);
-		return "employeeDashboard";
-	}
-	
+
 	@GetMapping("/empTaskCreation")
 	public String TaskForm(Model model) throws IOException {
 		Task task = new Task();
@@ -148,7 +143,8 @@ public class EmployeeTaskController {
 		while (itr.hasNext()) {
 			Map.Entry entry = (Map.Entry) itr.next();
 			if (entry.getValue().equals(task.getAssignTo())) {
-				// System.out.println("Emp entry >> " + entry.getKey() + " " + entry.getValue());
+				// System.out.println("Emp entry >> " + entry.getKey() + " " +
+				// entry.getValue());
 				task.setEmpId(entry.getKey().toString());
 			}
 		}

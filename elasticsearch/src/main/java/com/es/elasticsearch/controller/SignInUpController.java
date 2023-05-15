@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -78,6 +79,16 @@ public class SignInUpController {
 		} else {
 			model.addAttribute("listTaskDocuments", elasticSearchQueryTask.getTasksByEmpId(empID));
 		}
+		return "employeeDashboard";
+	}
+	
+	@GetMapping("/deleteEmpTask/{id}")
+	public String deleteEmpTask(@PathVariable(value = "id") String id, Model model, HttpSession session)
+			throws IOException {
+		model.addAttribute("employee", elasticSearchQuery.getDocumentByEmployeeId(empID));
+		model.addAttribute("listTaskDocuments", elasticSearchQueryTask.getTasksByEmpId(empID));
+		this.elasticSearchQueryTask.deleteDocumentById(id);
+		session.setAttribute("message", "Task " + id + " Deleted sucessfully. Please refresh the page");
 		return "employeeDashboard";
 	}
 

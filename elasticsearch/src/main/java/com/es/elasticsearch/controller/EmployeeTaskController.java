@@ -2,18 +2,21 @@ package com.es.elasticsearch.controller;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.es.elasticsearch.Repository.ElasticSearchQueryEmployee;
 import com.es.elasticsearch.Repository.ElasticSearchQueryTask;
@@ -30,11 +33,23 @@ public class EmployeeTaskController {
 	private ElasticSearchQueryEmployee elasticSearchQueryEmployee;
 
 	@GetMapping("/taskDashboard")
-	public String viewHomePage(Model model, String keyword) throws IOException {
+	public String viewHomePage(Model model, String keyword, @RequestParam(defaultValue = "0") int page) throws IOException {
 		if (keyword != null) {
 			model.addAttribute("listTaskDocuments", elasticSearchQueryTask.searchTaskByKeyword(keyword));
+			
+			List<Task> tasklist = elasticSearchQueryTask.searchTaskByKeyword(keyword);
+			Page<Task> tasks = elasticSearchQueryTask.findPaginated(page, 10);
+			model.addAttribute("currentPage", page);
+			model.addAttribute("totalPages", tasks.getTotalPages());
+			model.addAttribute("totalItems", tasklist.size());
 		} else {
 			model.addAttribute("listTaskDocuments", elasticSearchQueryTask.searchAllDocuments());
+			
+			List<Task> tasklist = elasticSearchQueryTask.searchAllDocuments();
+			Page<Task> tasks = elasticSearchQueryTask.findPaginated(page, 10);
+			model.addAttribute("currentPage", page);
+			model.addAttribute("totalPages", tasks.getTotalPages());
+			model.addAttribute("totalItems", tasks.getTotalElements());
 		}
 		return "taskDashboard";
 	}

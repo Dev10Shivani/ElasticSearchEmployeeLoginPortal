@@ -155,6 +155,33 @@ button, input, select, textarea {
 									</tr>
 								</tbody>
 							</table>
+							<div class="pagination">
+								<div class="row col-sm-10">
+									<div class="col-sm-2">Total Rows : [[${totalItems}]]</div>
+									<div class="col-sm-1">
+										<span th:class="${currentPage == 0} ? disabled : ''"> <a
+											th:href="@{/employeeDashboard?page=0}">First</a>
+										</span>
+									</div>
+									<div class="col-sm-1">
+										<span th:class="${currentPage == 0} ? disabled : ''"> <a
+											th:href="@{/employeeDashboard(page=${currentPage})}">&lt;</a>
+										</span>
+									</div>
+									<div class="col-sm-1">
+										<span
+											th:class="${currentPage == totalPages} ? disabled : ''">
+											<a th:href="@{/employeeDashboard(page=${currentPage})}">&gt;</a>
+										</span>
+									</div>
+									<div class="col-sm-1">
+										<span
+											th:class="${currentPage == totalPages} ? disabled : ''">
+											<a th:href="@{/employeeDashboard(page=${totalPages})}">Last</a>
+										</span>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</section>

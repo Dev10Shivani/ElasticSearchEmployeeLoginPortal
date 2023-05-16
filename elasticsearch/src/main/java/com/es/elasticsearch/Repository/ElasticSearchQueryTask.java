@@ -1,33 +1,29 @@
 package com.es.elasticsearch.Repository;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.*;
-import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
-import co.elastic.clients.elasticsearch.transform.Settings;
-
-import com.es.elasticsearch.entity.Task;
-import com.es.elasticsearch.helper.Indices;
-import com.es.elasticsearch.helper.Util;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.xcontent.XContentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Async;
-import org.springframework.stereotype.Repository;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
-import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Repository;
+
+import com.es.elasticsearch.entity.Task;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.FieldSort;
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch.core.DeleteRequest;
+import co.elastic.clients.elasticsearch.core.DeleteResponse;
+import co.elastic.clients.elasticsearch.core.GetResponse;
+import co.elastic.clients.elasticsearch.core.IndexResponse;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 
 @Repository
 public class ElasticSearchQueryTask {
@@ -35,48 +31,11 @@ public class ElasticSearchQueryTask {
 
 	private final String indexName = "tasks";
 
-	// private final List<String> INDICES_TO_CREATE = List.of(Indices.TASK_INDEX);
-
-	// private final RestHighLevelClient client;
-
-	// private static final ObjectMapper Mapper = new ObjectMapper();
-
 	@Autowired
 	private ElasticsearchClient elasticsearchClient;
 
-	/*
-	 * @Autowired public ElasticSearchQueryTask(RestHighLevelClient client) {
-	 * this.client = client; }
-	 * 
-	 * @PostConstruct public void creatIndex() { final String settings =
-	 * Util.loadAsString("static/mapping/task.json");
-	 * 
-	 * for (final String index : INDICES_TO_CREATE) { try { boolean indexExists =
-	 * client.indices().exists(new GetIndexRequest(index), RequestOptions.DEFAULT);
-	 * if (indexExists) { continue; }
-	 * 
-	 * final String mappings = Util.loadAsString("static/mapping/" + index +
-	 * ".json"); if (settings == null || mappings == null) {
-	 * LOGGER.error("failed to create index : " + index); continue; }
-	 * 
-	 * final CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
-	 * createIndexRequest.settings(settings, XContentType.JSON);
-	 * createIndexRequest.mapping(settings, XContentType.JSON);
-	 * 
-	 * client.indices().create(createIndexRequest, RequestOptions.DEFAULT); } catch
-	 * (final Exception e) { LOGGER.error(e.getMessage(), e); } } }
-	 * 
-	 * public boolean index(final Task task) { try { final String taskAsString =
-	 * Mapper.writeValueAsString(task);
-	 * 
-	 * IndexRequest request = new IndexRequest(Indices.TASK_INDEX);
-	 * request.id(task.getId()); request.source(taskAsString, XContentType.JSON);
-	 * 
-	 * IndexResponse response = client.index(request, RequestOptions.DEFAULT);
-	 * return response != null && response.status(.equals(RestStatus.OK))
-	 * 
-	 * }catch (final Exception e) { LOGGER.error(e.getMessage(), e); } }
-	 */
+	@Autowired
+	private TaskESRepository taskESRepository;
 
 	public String createOrUpdateDocument(Task task) throws IOException {
 
@@ -117,9 +76,11 @@ public class ElasticSearchQueryTask {
 	}
 
 	public List<Task> searchAllDocuments() throws IOException {
-
 		SearchRequest searchRequest = SearchRequest.of(s -> s.index(indexName));
-		SearchResponse searchResponse = elasticsearchClient.search(searchRequest, Task.class);
+		SearchResponse searchResponse = elasticsearchClient.search(s -> {
+			return s.index(indexName).from(0).size(10)
+					.sort(so -> so.field(FieldSort.of(f -> f.field("id.keyword").order(SortOrder.Asc))));
+		}, Task.class);
 		List<Hit> hits = searchResponse.hits().hits();
 		List<Task> tasks = new ArrayList<>();
 		for (Hit object : hits) {
@@ -130,9 +91,11 @@ public class ElasticSearchQueryTask {
 	}
 
 	public List<Task> searchTaskByKeyword(String keyword) throws IOException {
-		SearchRequest searchRequest = SearchRequest.of(s -> s.index(indexName)
+		SearchRequest searchRequest = SearchRequest.of(s -> s.index(indexName).size(10)
+				.sort(so -> so.field(FieldSort.of(f -> f.field("id.keyword").order(SortOrder.Asc))))
 				.query(q -> q.multiMatch(t -> t.fields("id", "title", "description", "assignTo").query(keyword))));
 		SearchResponse searchResponse = elasticsearchClient.search(searchRequest, Task.class);
+
 		List<Hit> hits = searchResponse.hits().hits();
 		List<Task> tasks = new ArrayList<>();
 		for (Hit object : hits) {
@@ -142,9 +105,15 @@ public class ElasticSearchQueryTask {
 		return tasks;
 	}
 
+	public Page<Task> findPaginated(int pageNo, int pageSize) {
+		PageRequest pageable = PageRequest.of(pageNo, pageSize);
+		return this.taskESRepository.findAll(pageable);
+	}
+
 	public List<Task> getTasksByEmpId(String EmpId) throws IOException {
-		SearchRequest searchRequest = SearchRequest
-				.of(s -> s.index(indexName).query(q -> q.match(t -> t.field("empId").query(EmpId))));
+		SearchRequest searchRequest = SearchRequest.of(s -> s.index(indexName)
+				.sort(so -> so.field(FieldSort.of(f -> f.field("id.keyword").order(SortOrder.Asc))))
+				.query(q -> q.match(t -> t.field("empId").query(EmpId))));
 		SearchResponse searchResponse = elasticsearchClient.search(searchRequest, Task.class);
 		List<Hit> hits = searchResponse.hits().hits();
 		List<Task> tasks = new ArrayList<>();
